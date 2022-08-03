@@ -3,6 +3,7 @@ package handlers
 import (
 	"context"
 	"fmt"
+	"os"
 	"packer/dal"
 	"packer/http"
 	"packer/model"
@@ -71,10 +72,13 @@ func GetUserContestRecord(ctx context.Context, commCtx map[string]string, param 
 	fmt.Println(resp)
 	userRecord := model.ConvertUserRecord(resp)
 	userRecord.Record = nil
-	_, t := dal.DrawRecord(resp.GetRecord())
+	filePath, fileName := dal.DrawRecord(resp.GetRecord())
+	defer time.AfterFunc(time.Second, func() {
+		os.Remove(filePath)
+	})
 
 	s := fmt.Sprintf("%s\n", userRecord)
-	cqCode := fmt.Sprintf("[CQ:image,file=%s/pic/%s.png]", http.GetServer().Url, t)
+	cqCode := fmt.Sprintf("[CQ:image,file=%s/pic/%s]", http.GetServer().Url, fileName)
 	s = fmt.Sprintf("%s\n%s\n%s\n", s, cqCode, time.Now().String())
 
 	groupIds := getGroupIdsWithCommCtx(commCtx)
@@ -169,29 +173,5 @@ func GetAllCommand(ctx context.Context, commCtx map[string]string, param []strin
 	s = fmt.Sprintf("%s\n%s\n", s, time.Now().String())
 
 	http.MSendGroupMsg(groupIds, s, true)
-	return nil
-}
-
-func GetUserContestRecordPicture(ctx context.Context, commCtx map[string]string, param []string) error {
-	if len(param) <= 1 {
-		return fmt.Errorf("param invailed")
-	}
-
-	userContest := model.UserContestRecord{
-		Platform: util.MatchPlatform(param[0]),
-		Username: param[1],
-	}
-
-	resp, err := rpc.GetUserContestRecord(ctx, userContest)
-	if err != nil {
-		fmt.Printf("GetUserContestRecord, rpc GetUserContestRecord failed, err = (%s)\n", err.Error())
-		return err
-	}
-
-	_, t := dal.DrawRecord(resp.GetRecord())
-
-	groupIds := getGroupIdsWithCommCtx(commCtx)
-	msg := fmt.Sprintf("%s\n[CQ:image,file=%s/pic/%s.png]", time.Now().String(), "http://localhost:5701", t)
-	http.MSendGroupMsg(groupIds, msg, false)
 	return nil
 }

@@ -14,7 +14,6 @@ func init() {
 		"fetch_timer_recent_contest": handlers.HandlerWrapper("FetchTimerRecentContest", handlers.FetchTimerRecentContest),
 		"add_timer_group_id":         handlers.HandlerWrapper("AddTimerGroupId", handlers.AddTimerGroupId),
 		"help":                       handlers.HandlerWrapper("Help", handlers.GetAllCommand),
-		"get_pic":                    handlers.HandlerWrapper("GetPic", handlers.GetUserContestRecordPicture),
 	}
 	model.GetTimerTask().TaskList = []model.Task{
 		{

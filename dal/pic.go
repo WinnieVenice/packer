@@ -73,10 +73,12 @@ func DrawRecord(record []*pb.UserContestRecord_Record) (string, string) {
 	pic.Series = append(pic.Series, chart.LastValueAnnotationSeries(maxRate))
 
 	t := strconv.FormatInt(time.Now().Unix(), 10)
-	fileName := fmt.Sprintf("%s/pic/%s.png", util.GetCurrentAbPath(), t)
-	f, _ := os.Create(fileName)
+	fileName := fmt.Sprintf("%s%s.png", t, strconv.FormatUint(util.GetGoId(), 10))
+	filePath := fmt.Sprintf("%s/pic/%s", util.GetCurrentAbPath(), fileName)
+	fmt.Printf("DrawRecord, create filePath = (%+v), t = (%+v), goId = (%+v)\n", fileName, t, util.GetGoId())
+	f, _ := os.Create(filePath)
 	defer f.Close()
 	pic.Render(chart.PNG, f)
 
-	return fileName, t
+	return filePath, fileName
 }

@@ -79,7 +79,7 @@ func DefaultHandle(c *gin.Context) {
 		param = s[1:]
 	}
 	if f, ok := model.MsgHandlerMap[util.MatchCommand(s[0])]; ok {
-		err := f(commCtx, param)
+		err := f.Handler(commCtx, param)
 		if err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{"status": err.Error()})
 			return

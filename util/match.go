@@ -1,6 +1,9 @@
 package util
 
-import "packer/model"
+import (
+	"fmt"
+	"packer/model"
+)
 
 var (
 	matchPlatformMap = map[string]string{
@@ -12,14 +15,25 @@ var (
 		"lc": model.PlatformLc,
 		"cc": model.PlaformCc,
 	}
-	matchCommandMap = map[string]string{
-		"比赛":   model.CommandRecentContest,
-		"最近比赛": model.CommandRecentContest,
-		"康康":   model.CommandUserContestRecord,
-		"让我康康": model.CommandUserContestRecord,
-		"检查身体": model.CommandUserContestRecord,
-	}
+	matchCommandMap = make(map[string]string)
 )
+
+func AddMatchCommand(cmd string, handler *model.DefaultHandler) bool {
+	if len(cmd) <= 0 || handler == nil {
+		fmt.Printf("AddMatchCommand failed, param invaild, cmd = (%+v), handlers = (%+v)\n", cmd, handler)
+		return false
+	}
+	if _, ok := matchCommandMap[cmd]; ok {
+		fmt.Printf("AddMatchCommand failed, cmd existed, cmd = (%+v)\n", cmd)
+		return false
+	}
+
+	matchCommandMap[cmd] = handler.Name
+	handler.CmdMapp = append(handler.CmdMapp, cmd)
+
+	fmt.Printf("AddMatchCommand succ, handler = (%+v), cmdMapp = (%+v)\n", handler.Name, handler.CmdMapp)
+	return true
+}
 
 func MatchPlatform(platform string) string {
 	if _, ok := matchPlatformMap[platform]; !ok {

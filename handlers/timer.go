@@ -74,7 +74,8 @@ func AddContestInTimer(contest *model.Contest) {
 	if _, ok := TimerCache.Get(contest.Url); ok {
 		return
 	}
-	TimerCache.Set(contest.Url, contest, int(time.Until(endTime)))
+
+	TimerCache.Set(contest.Url, contest, time.Until(endTime))
 
 	fmt.Printf("TimerRecentContest, add contest = (%s) into timer\n", contest)
 

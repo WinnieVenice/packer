@@ -17,14 +17,18 @@ const (
 	PlatformLc = "leetcode"
 	PlaformCc  = "codechef"
 
-	CommandRecentContest     = "recent_contest"
-	CommandUserContestRecord = "user_contest_record"
-
 	BlankSpace = "--------------"
 )
 
 var (
 	PlaformList      = []string{PlatformCf, PlatformAt, PlatformNc, PlatformLg, PlatformVj, PlatformLc, PlaformCc}
-	MsgHandlerMap    map[string]DefaultHandler
+	MsgHandlerMap    = make(map[string]*DefaultHandler)
 	TimerTaskManager *TimerTask
+
+	CmdGetRecentContest     = DefaultHandler{Name: "get_recent_contest"}
+	CmdGetUserContestRecord = DefaultHandler{Name: "get_user_contest_record"}
+	CmdGetTimerContest      = DefaultHandler{Name: "get_timer_contest"}
+	CmdFetchTimerContest    = DefaultHandler{Name: "fetch_timer_contest"}
+	CmdAddTimerGroupId      = DefaultHandler{Name: "add_timer_group_id"}
+	CmdHelp                 = DefaultHandler{Name: "help"}
 )

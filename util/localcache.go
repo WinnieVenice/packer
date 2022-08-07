@@ -43,11 +43,11 @@ func (lc *LocalCache) Get(key interface{}) (interface{}, bool) {
 	return nil, false
 }
 
-func (lc *LocalCache) Set(key, value interface{}, durationSecond int) {
+func (lc *LocalCache) Set(key, value interface{}, duration time.Duration) {
 	lc.cache.Store(key, &Item{
 		val:        value,
 		createTime: time.Now(),
-		duration:   time.Duration(durationSecond * 1000 * 1000 * 1000),
+		duration:   duration,
 	})
 }
 

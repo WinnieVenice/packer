@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"os"
 	"packer/dal"
@@ -14,6 +15,36 @@ import (
 	"time"
 )
 
+func HandlerWrapper(funcMap map[string]string, f model.MsgHandler) model.DefaultHandler {
+	handler := model.DefaultHandler{}
+	handler.Handler = func(commCtx map[string]string, param []string) error {
+		ctx := context.Background()
+		err := f(ctx, commCtx, param)
+		if err != nil {
+			errMsg := fmt.Sprintf("handle err = (%+v)\n", err)
+			fmt.Println(errMsg)
+			groupIds := getGroupIdsWithCommCtx(commCtx)
+			http.MSendGroupMsg(groupIds, errMsg, true)
+			return err
+		}
+		return nil
+	}
+	jsonFuncMap, err := json.Marshal(funcMap)
+	if err != nil {
+		fmt.Printf("HandlerWrapper marshal funcMap failed, funcMap = (%+v), err = (%+v)\n", funcMap, err)
+		return handler
+	}
+	err = json.Unmarshal(jsonFuncMap, &handler)
+
+	if err != nil {
+		fmt.Printf("HandlerWrapper unmarshal funcMap failed, funcMap = (%+v), err = (%+v)\n", funcMap, err)
+		return handler
+	}
+
+	return handler
+}
+
+/*
 func HandlerWrapper(name string, f model.MsgHandler) model.DefaultHandler {
 	return func(commCtx map[string]string, param []string) error {
 		ctx, cancel := context.WithTimeout(context.Background(), time.Minute)
@@ -27,6 +58,7 @@ func HandlerWrapper(name string, f model.MsgHandler) model.DefaultHandler {
 		return nil
 	}
 }
+*/
 func GetRecentContest(ctx context.Context, commCtx map[string]string, param []string) error {
 	if len(param) <= 0 {
 		return fmt.Errorf("param invailed")
@@ -167,8 +199,8 @@ func getGroupIdsWithCommCtx(commCtx map[string]string) []int64 {
 func GetAllCommand(ctx context.Context, commCtx map[string]string, param []string) error {
 	groupIds := getGroupIdsWithCommCtx(commCtx)
 	s := ""
-	for k, _ := range model.MsgHandlerMap {
-		s = fmt.Sprintf("%s\n%s\n	", s, k)
+	for _, f := range model.MsgHandlerMap {
+		s = fmt.Sprintf("%s\n%s\n", s, f.String())
 	}
 	s = fmt.Sprintf("%s\n%s\n", s, time.Now().String())
 

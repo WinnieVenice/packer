@@ -1,62 +1,50 @@
-package http
+package cq
 
 import (
 	"fmt"
 	"net/http"
-	"packer/model"
-	"packer/util"
 	"strconv"
 	"strings"
 
+	"github.com/spf13/viper"
+
 	"github.com/gin-gonic/gin"
+
+	_ "github.com/WinnieVenice/packer/conf"
+	"github.com/WinnieVenice/packer/model"
+	"github.com/WinnieVenice/packer/util"
 )
 
 var (
-	server *model.HttpServer
+	server = NewServer()
 )
 
-func init() {
-	server = NewServer("", "")
-}
-
-func NewServer(ip string, port string) *model.HttpServer {
-	if len(ip) <= 0 {
-		ip = "localhost"
-	}
-	if len(port) <= 0 {
-		port = "5701"
-	}
-
-	server := model.HttpServer{
+func NewServer() *model.HttpServer {
+	host := viper.GetString("service.cq.host")
+	port := viper.GetInt("service.cq.port")
+	return &model.HttpServer{
 		Router: gin.Default(),
-		Ip:     ip,
+		Host:   host,
 		Port:   port,
-		Url:    fmt.Sprintf("http://%s:%s", ip, port),
 	}
-	return &server
 }
 
-func GetServer() *model.HttpServer {
-	if server == nil {
-		server = NewServer("", "")
-	}
-	return server
+func GetHostPort() string {
+	return fmt.Sprintf("http://%s:%d", server.Host, server.Port)
 }
 
-func Run() error {
+func Run() {
 	Register()
-	err := server.Router.Run(fmt.Sprintf(":%s", server.Port))
+	err := server.Router.Run(fmt.Sprintf("%s:%d", server.Host, server.Port))
 	if err != nil {
 		fmt.Printf("Http Server run failed, err = (%s)\n", err.Error())
-		return err
+		panic(err)
 	}
-	return nil
 }
 
 func Register() {
 	server.Router.POST("/", DefaultHandle)
 	server.Router.Static("pic", "./pic")
-
 }
 
 func DefaultHandle(c *gin.Context) {

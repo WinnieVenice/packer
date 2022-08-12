@@ -1,28 +1,29 @@
-package handlers
+package timer
 
 import (
 	"context"
 	"fmt"
-	"packer/http"
-	"packer/model"
-	"packer/rpc"
-	"packer/util"
 	"time"
+
+	"github.com/WinnieVenice/packer/client/cq"
+	"github.com/WinnieVenice/packer/client/crawl"
+	"github.com/WinnieVenice/packer/model"
+	"github.com/WinnieVenice/packer/util"
 )
 
 var (
-	TimerCacheInterval = 300
-	TimerCache         = util.NewLocalCache(TimerCacheInterval)
-	TimerGroupIdList   = []int64{376893667}
+	CacheInterval = 300
+	Cache         = util.NewLocalCache(CacheInterval)
+	GroupIdList   = []int64{376893667}
 )
 
-func TimerRecentContest() {
+func RecentContest() {
 	ctx, cancel := context.WithTimeout(context.Background(), time.Minute)
 	defer cancel()
 
-	resp, err := rpc.MGetRecentContest(ctx, model.PlaformList)
+	resp, err := crawl.MGetRecentContest(ctx, model.PlaformList)
 	if err != nil {
-		fmt.Printf("TimerRecentContest, rpc MGetRecentContest failed, err = (%s)\n", err.Error())
+		fmt.Printf("RecentContest, rpc MGetRecentContest failed, err = (%s)\n", err.Error())
 		return
 	}
 
@@ -41,13 +42,13 @@ func TimerRecentContest() {
 
 }
 
-func TimerDailyQuestion() {
+func DailyQuestion() {
 	ctx, cancel := context.WithTimeout(context.Background(), time.Minute)
 	defer cancel()
 
-	resp, err := rpc.GetDailyQuestion(ctx, model.PlatformLc)
+	resp, err := crawl.GetDailyQuestion(ctx, model.PlatformLc)
 	if err != nil {
-		fmt.Printf("TimerDailyQuestion, rpc GetDailyQuestion failed, err = (%s)\n", err.Error())
+		fmt.Printf("DailyQuestion, rpc GetDailyQuestion failed, err = (%s)\n", err.Error())
 		return
 	}
 
@@ -60,7 +61,7 @@ func TimerDailyQuestion() {
 		problem := model.ConvertProblem(p)
 		msg = fmt.Sprintf("%s\n\n%s", msg, problem.String())
 	}
-	http.MSendGroupMsg(TimerGroupIdList, msg, true)
+	cq.MSendGroupMsg(GroupIdList, msg, true)
 }
 
 func AddContestInTimer(contest *model.Contest) {
@@ -71,15 +72,15 @@ func AddContestInTimer(contest *model.Contest) {
 		return
 	}
 
-	if _, ok := TimerCache.Get(contest.Url); ok {
+	if _, ok := Cache.Get(contest.Url); ok {
 		return
 	}
 
-	TimerCache.Set(contest.Url, contest, time.Until(endTime))
+	Cache.Set(contest.Url, contest, time.Until(endTime))
 
-	fmt.Printf("TimerRecentContest, add contest = (%s) into timer\n", contest)
+	fmt.Printf("RecentContest, add contest = (%s) into timer\n", contest)
 
 	time.AfterFunc(time.Until(contest.StartTime.Add(-time.Hour)), func() {
-		http.MSendGroupMsg(TimerGroupIdList, msg, true)
+		cq.MSendGroupMsg(GroupIdList, msg, true)
 	})
 }

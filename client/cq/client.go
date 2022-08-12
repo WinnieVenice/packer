@@ -1,4 +1,4 @@
-package http
+package cq
 
 import (
 	"bytes"
@@ -6,35 +6,17 @@ import (
 	"fmt"
 	"io/ioutil"
 	"net/http"
-	"packer/model"
 	"sync"
 	"time"
+
+	"github.com/WinnieVenice/packer/model"
 )
 
 var (
-	client *model.HttpClient
+	client = &http.Client{
+		Timeout: time.Minute,
+	}
 )
-
-func NewClient(timeout time.Duration) *model.HttpClient {
-	if timeout <= 0 {
-		timeout = 60
-	}
-
-	client := model.HttpClient{
-		Client: http.Client{
-			Timeout: timeout * time.Second,
-		},
-	}
-
-	return &client
-}
-
-func GetClient() *model.HttpClient {
-	if client == nil {
-		client = NewClient(0)
-	}
-	return client
-}
 
 func SendGroupMsg(groupId int64, msg string, autoEscape bool) error {
 	body := map[string]interface{}{
@@ -59,7 +41,7 @@ func SendGroupMsg(groupId int64, msg string, autoEscape bool) error {
 		return err
 	}
 
-	resp, err := GetClient().Client.Do(httpReq)
+	resp, err := client.Do(httpReq)
 	if err != nil {
 		fmt.Printf("packer send http failed, err = (%s)\n", err.Error())
 		return err
@@ -80,17 +62,17 @@ func SendGroupMsg(groupId int64, msg string, autoEscape bool) error {
 	return nil
 }
 
-func MSendGroupMsg(groupIds []int64, msg string, auto_escape bool) {
-	wgs := sync.WaitGroup{}
+func MSendGroupMsg(groupIds []int64, msg string, autoEscape bool) {
+	wg := sync.WaitGroup{}
 	for _, id := range groupIds {
-		wgs.Add(1)
-		go func(i int64, wg *sync.WaitGroup) {
+		wg.Add(1)
+		go func(i int64) {
 			defer wg.Done()
-			err := SendGroupMsg(i, msg, auto_escape)
+			err := SendGroupMsg(i, msg, autoEscape)
 			if err != nil {
 				return
 			}
-		}(id, &wgs)
+		}(id)
 	}
-	wgs.Wait()
+	wg.Wait()
 }

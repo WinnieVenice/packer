@@ -1,17 +1,18 @@
-package dal
+package charts
 
 import (
 	"fmt"
 	"os"
-	"packer/pb"
-	"packer/util"
 	"strconv"
 	"time"
+
+	"github.com/WinnieVenice/packer/idl"
+	"github.com/WinnieVenice/packer/util"
 
 	"github.com/wcharczuk/go-chart/v2"
 )
 
-func DrawRecord(record []*pb.UserContestRecord_Record) (string, string) {
+func DrawRecord(record []*idl.UserContestRecord_Record) (string, string) {
 	pic := chart.Chart{
 		XAxis: chart.XAxis{
 			ValueFormatter: func(v interface{}) string {

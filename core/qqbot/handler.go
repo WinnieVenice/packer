@@ -1,18 +1,21 @@
-package handlers
+package qqbot
 
 import (
 	"context"
 	"encoding/json"
 	"fmt"
 	"os"
-	"packer/dal"
-	"packer/http"
-	"packer/model"
-	"packer/rpc"
-	"packer/util"
 	"strconv"
 	"strings"
 	"time"
+
+	"github.com/WinnieVenice/packer/charts"
+	cqc "github.com/WinnieVenice/packer/client/cq"
+	"github.com/WinnieVenice/packer/client/crawl"
+	"github.com/WinnieVenice/packer/core/timer"
+	"github.com/WinnieVenice/packer/model"
+	cqs "github.com/WinnieVenice/packer/service/cq"
+	"github.com/WinnieVenice/packer/util"
 )
 
 func HandlerWrapper(funcMap map[string]string, f model.MsgHandler) model.DefaultHandler {
@@ -24,7 +27,7 @@ func HandlerWrapper(funcMap map[string]string, f model.MsgHandler) model.Default
 			errMsg := fmt.Sprintf("handle err = (%+v)\n", err)
 			fmt.Println(errMsg)
 			groupIds := getGroupIdsWithCommCtx(commCtx)
-			http.MSendGroupMsg(groupIds, errMsg, true)
+			cqc.MSendGroupMsg(groupIds, errMsg, true)
 			return err
 		}
 		return nil
@@ -44,31 +47,16 @@ func HandlerWrapper(funcMap map[string]string, f model.MsgHandler) model.Default
 	return handler
 }
 
-/*
-func HandlerWrapper(name string, f model.MsgHandler) model.DefaultHandler {
-	return func(commCtx map[string]string, param []string) error {
-		ctx, cancel := context.WithTimeout(context.Background(), time.Minute)
-		defer cancel()
-
-		err := f(ctx, commCtx, param)
-		if err != nil {
-			fmt.Printf("handle err = (%+v)\n", err)
-			return err
-		}
-		return nil
-	}
-}
-*/
-func GetRecentContest(ctx context.Context, commCtx map[string]string, param []string) error {
+func SendRecentContest(ctx context.Context, commCtx map[string]string, param []string) error {
 	if len(param) <= 0 {
 		return fmt.Errorf("param invailed")
 	}
 
 	platform := util.MatchPlatform(param[0])
 
-	resp, err := rpc.GetRecentContest(ctx, platform)
+	resp, err := crawl.GetRecentContest(ctx, platform)
 	if err != nil {
-		fmt.Printf("GetRecentContest, rpc GetRecentContest failed, err = (%s)\n", err.Error())
+		fmt.Printf("SendRecentContest, rpc SendRecentContest failed, err = (%s)\n", err.Error())
 		return err
 	}
 	fmt.Println(resp)
@@ -81,12 +69,12 @@ func GetRecentContest(ctx context.Context, commCtx map[string]string, param []st
 
 	groupIds := getGroupIdsWithCommCtx(commCtx)
 
-	http.MSendGroupMsg(groupIds, s, true)
+	cqc.MSendGroupMsg(groupIds, s, true)
 
 	return nil
 }
 
-func GetUserContestRecord(ctx context.Context, commCtx map[string]string, param []string) error {
+func SendUserContestRecord(ctx context.Context, commCtx map[string]string, param []string) error {
 	if len(param) <= 1 {
 		return fmt.Errorf("param invailed")
 	}
@@ -96,26 +84,26 @@ func GetUserContestRecord(ctx context.Context, commCtx map[string]string, param 
 		Username: param[1],
 	}
 
-	resp, err := rpc.GetUserContestRecord(ctx, userContest)
+	resp, err := crawl.GetUserContestRecord(ctx, userContest)
 	if err != nil {
-		fmt.Printf("GetUserContestRecord, rpc GetUserContestRecord failed, err = (%s)\n", err.Error())
+		fmt.Printf("SendUserContestRecord, rpc SendUserContestRecord failed, err = (%s)\n", err.Error())
 		return err
 	}
 	fmt.Println(resp)
 	userRecord := model.ConvertUserRecord(resp)
 	userRecord.Record = nil
-	filePath, fileName := dal.DrawRecord(resp.GetRecord())
+	filePath, fileName := charts.DrawRecord(resp.GetRecord())
 	defer time.AfterFunc(time.Second, func() {
 		os.Remove(filePath)
 	})
 
 	s := fmt.Sprintf("%s\n", userRecord)
-	cqCode := fmt.Sprintf("[CQ:image,file=%s/pic/%s]", http.GetServer().Url, fileName)
+	cqCode := fmt.Sprintf("[CQ:image,file=%s/pic/%s]", cqs.GetHostPort(), fileName)
 	s = fmt.Sprintf("%s\n%s\n%s\n", s, cqCode, time.Now().String())
 
 	groupIds := getGroupIdsWithCommCtx(commCtx)
 
-	http.MSendGroupMsg(groupIds, s, false)
+	cqc.MSendGroupMsg(groupIds, s, false)
 
 	return nil
 }
@@ -123,7 +111,7 @@ func GetUserContestRecord(ctx context.Context, commCtx map[string]string, param 
 func GetTimerAllContest(ctx context.Context, commCtx map[string]string, param []string) error {
 	groupIds := getGroupIdsWithCommCtx(commCtx)
 	s := ""
-	timerCacheKV := TimerCache.GetAllKV()
+	timerCacheKV := timer.Cache.GetAllKV()
 	cnt := 0
 	for _, v := range timerCacheKV {
 		cnt++
@@ -131,7 +119,7 @@ func GetTimerAllContest(ctx context.Context, commCtx map[string]string, param []
 		s = fmt.Sprintf("%s\n%s\n", s, contest.String())
 		if cnt > 10 {
 			s = fmt.Sprintf("%s\n%s", s, time.Now().String())
-			http.MSendGroupMsg(groupIds, s, true)
+			cqc.MSendGroupMsg(groupIds, s, true)
 			cnt = 0
 			s = ""
 		}
@@ -139,19 +127,19 @@ func GetTimerAllContest(ctx context.Context, commCtx map[string]string, param []
 
 	if cnt > 0 {
 		s = fmt.Sprintf("%s\n%s", s, time.Now().String())
-		http.MSendGroupMsg(groupIds, s, true)
+		cqc.MSendGroupMsg(groupIds, s, true)
 	}
 
 	return nil
 }
 
 func FetchTimerRecentContest(ctx context.Context, commCtx map[string]string, param []string) error {
-	TimerRecentContest()
+	timer.RecentContest()
 
 	s := "执行完成\n"
 	groupIds := getGroupIdsWithCommCtx(commCtx)
 
-	http.MSendGroupMsg(groupIds, s, true)
+	cqc.MSendGroupMsg(groupIds, s, true)
 	return nil
 }
 
@@ -161,7 +149,7 @@ func AddTimerGroupId(ctx context.Context, commCtx map[string]string, param []str
 	succGroupIds := []string{}
 	for _, groupId := range groupIds {
 		ok := true
-		for _, v := range TimerGroupIdList {
+		for _, v := range timer.GroupIdList {
 			if groupId == v {
 				ok = false
 				break
@@ -172,19 +160,19 @@ func AddTimerGroupId(ctx context.Context, commCtx map[string]string, param []str
 		}
 	}
 	nowGroupIds := []string{}
-	for _, v := range TimerGroupIdList {
+	for _, v := range timer.GroupIdList {
 		nowGroupIds = append(nowGroupIds, strconv.FormatInt(v, 10))
 	}
 	s := fmt.Sprintf("将群号(%s)加入定时推送列表成功\n现有推送列表:(%s)",
 		strings.Join(succGroupIds, " "), strings.Join(nowGroupIds, " "))
 
-	http.MSendGroupMsg(groupIds, s, true)
+	cqc.MSendGroupMsg(groupIds, s, true)
 
 	return nil
 }
 func getGroupIdsWithCommCtx(commCtx map[string]string) []int64 {
 	groupIdList := strings.Split(commCtx["group_id"], " ")
-	groupIds := []int64{}
+	var groupIds []int64
 	for _, v := range groupIdList {
 		id, err := strconv.ParseInt(v, 10, 64)
 		if err != nil {
@@ -196,7 +184,7 @@ func getGroupIdsWithCommCtx(commCtx map[string]string) []int64 {
 	return groupIds
 }
 
-func GetAllCommand(ctx context.Context, commCtx map[string]string, param []string) error {
+func SendHelp(ctx context.Context, commCtx map[string]string, param []string) error {
 	groupIds := getGroupIdsWithCommCtx(commCtx)
 	s := ""
 	for _, f := range model.MsgHandlerMap {
@@ -204,6 +192,6 @@ func GetAllCommand(ctx context.Context, commCtx map[string]string, param []strin
 	}
 	s = fmt.Sprintf("%s\n%s\n", s, time.Now().String())
 
-	http.MSendGroupMsg(groupIds, s, true)
+	cqc.MSendGroupMsg(groupIds, s, true)
 	return nil
 }

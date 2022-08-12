@@ -2,7 +2,8 @@ package util
 
 import (
 	"fmt"
-	"packer/model"
+
+	"github.com/WinnieVenice/packer/model"
 )
 
 var (

@@ -2,8 +2,9 @@ package model
 
 import (
 	"fmt"
-	"packer/pb"
 	"time"
+
+	"github.com/WinnieVenice/packer/idl"
 )
 
 type Contest struct {
@@ -41,7 +42,7 @@ type UserContestRecord struct {
 	Platform string
 }
 
-func ConvertContest(c *pb.RecentContest_ContestMessage) *Contest {
+func ConvertContest(c *idl.RecentContest_ContestMessage) *Contest {
 	r := Contest{}
 	r.Name = c.Name
 	r.Url = c.Url
@@ -59,7 +60,7 @@ func (c *Contest) String() string {
 	return s
 }
 
-func ConvertProblem(p *pb.GetDailyQuestionResponse_Problem) *Problem {
+func ConvertProblem(p *idl.GetDailyQuestionResponse_Problem) *Problem {
 	r := Problem{}
 	r.Platform = p.Platform
 	r.Url = p.Url
@@ -79,7 +80,7 @@ func (p *Problem) String() string {
 	return s
 }
 
-func ConvertUserRecord(ur *pb.UserContestRecord) *UserRecord {
+func ConvertUserRecord(ur *idl.UserContestRecord) *UserRecord {
 	r := UserRecord{}
 	r.ProfileUrl = ur.ProfileUrl
 	r.Rating = ur.Rating
@@ -110,7 +111,7 @@ func (ur *UserRecord) String() string {
 	return s
 }
 
-func ConvertContestRecord(cr *pb.UserContestRecord_Record) *ContestRecord {
+func ConvertContestRecord(cr *idl.UserContestRecord_Record) *ContestRecord {
 	r := ContestRecord{}
 	r.Name = cr.Name
 	r.Url = cr.Url

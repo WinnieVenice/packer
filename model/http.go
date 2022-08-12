@@ -1,20 +1,13 @@
 package model
 
 import (
-	"net/http"
-
 	"github.com/gin-gonic/gin"
 )
 
 type HttpServer struct {
 	Router *gin.Engine
-	Ip     string
-	Port   string
-	Url    string
-}
-
-type HttpClient struct {
-	Client http.Client
+	Host   string
+	Port   int
 }
 
 type Handler struct{}

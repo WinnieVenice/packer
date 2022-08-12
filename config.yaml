@@ -1,0 +1,9 @@
+client:
+  crawler:
+    host: localhost
+    port: 9851
+
+service:
+  cq:
+    host: localhost
+    port: '5701'

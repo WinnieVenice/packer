@@ -6,11 +6,9 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/spf13/viper"
-
 	"github.com/gin-gonic/gin"
 
-	_ "github.com/WinnieVenice/packer/conf"
+	"github.com/WinnieVenice/packer/conf"
 	"github.com/WinnieVenice/packer/model"
 	"github.com/WinnieVenice/packer/util"
 )
@@ -20,8 +18,8 @@ var (
 )
 
 func NewServer() *model.HttpServer {
-	host := viper.GetString("service.cq.host")
-	port := viper.GetInt("service.cq.port")
+	host := conf.V.GetString("service.cq.host")
+	port := conf.V.GetInt("service.cq.port")
 	return &model.HttpServer{
 		Router: gin.Default(),
 		Host:   host,

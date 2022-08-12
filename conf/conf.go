@@ -7,11 +7,10 @@ import (
 	"github.com/spf13/viper"
 )
 
-/**
-import (
-	_ "github.com/WinnieVenice/packer/conf"
+var (
+	V = viper.GetViper()
 )
-*/
+
 func init() {
 	_, fileName, _, _ := runtime.Caller(0)
 	viper.SetConfigName("config.yaml")

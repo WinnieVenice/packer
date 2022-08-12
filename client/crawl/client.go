@@ -4,11 +4,10 @@ import (
 	"fmt"
 	"sync"
 
-	"github.com/spf13/viper"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
 
-	_ "github.com/WinnieVenice/packer/conf"
+	"github.com/WinnieVenice/packer/conf"
 	"github.com/WinnieVenice/packer/idl"
 )
 
@@ -20,7 +19,7 @@ var (
 func Client() idl.CrawlServiceClient {
 	once.Do(func() {
 		conn, err := grpc.Dial(
-			fmt.Sprintf("%s:%d", viper.GetString("client.crawler.host"), viper.GetInt("client.crawler.port")),
+			fmt.Sprintf("%s:%d", conf.V.GetString("client.crawler.host"), conf.V.GetInt("client.crawler.port")),
 			grpc.WithTransportCredentials(insecure.NewCredentials()),
 		)
 		if err != nil {

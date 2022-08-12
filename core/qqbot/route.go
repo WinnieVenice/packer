@@ -66,3 +66,6 @@ func init() {
 		},
 	}
 }
+
+func MustInit() {
+}

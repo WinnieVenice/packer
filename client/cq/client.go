@@ -18,22 +18,16 @@ var (
 	}
 )
 
-func SendGroupMsg(groupId int64, msg string, autoEscape bool) error {
-	body := map[string]interface{}{
-		"group_id":    groupId,
-		"message":     msg,
-		"auto_escape": autoEscape,
-	}
-
+func cqSend(urlMethod string, body map[string]interface{}) error {
 	jsonBody, err := json.Marshal(body)
 	if err != nil {
 		fmt.Printf("packer marshal http body failed, err = (%s)\n", err.Error())
 		return err
 	}
 
-	url := fmt.Sprintf("%s/%s", model.UrlRobotBase, model.UrlSendGroupMsg)
-	httpReq, err := http.NewRequest(model.MethodSendGroupMsg, url, bytes.NewReader(jsonBody))
-	httpReq.Header.Add("Content-Type", model.ContentTypeSendGroupMsg)
+	url := fmt.Sprintf("%s/%s", model.UrlRobotBase, urlMethod)
+	httpReq, err := http.NewRequest("POST", url, bytes.NewReader(jsonBody))
+	httpReq.Header.Add("Content-Type", "application/json")
 	httpReq.Header.Add("X-SELF-ID", model.SelfId)
 
 	if err != nil {
@@ -62,6 +56,14 @@ func SendGroupMsg(groupId int64, msg string, autoEscape bool) error {
 	return nil
 }
 
+func SendGroupMsg(groupId int64, msg string, autoEscape bool) error {
+	return cqSend(model.UrlSendGroupMsg, map[string]interface{}{
+		"group_id":    groupId,
+		"message":     msg,
+		"auto_escape": autoEscape,
+	})
+}
+
 func MSendGroupMsg(groupIds []int64, msg string, autoEscape bool) {
 	wg := sync.WaitGroup{}
 	for _, id := range groupIds {
@@ -75,4 +77,12 @@ func MSendGroupMsg(groupIds []int64, msg string, autoEscape bool) {
 		}(id)
 	}
 	wg.Wait()
+}
+
+func SendPrivateMsg(userId int64, msg string, autoEscape bool) error {
+	return cqSend(model.UrlSendPrivateMsg, map[string]interface{}{
+		"user_id":     userId,
+		"message":     msg,
+		"auto_escape": autoEscape,
+	})
 }

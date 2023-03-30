@@ -1,0 +1,235 @@
+make all --print-data-base --no-builtin-variables --no-builtin-rules --question
+make: *** No rule to make target 'all'.  Stop.
+
+# GNU Make 4.2.1
+# Built for x86_64-pc-linux-gnu
+# Copyright (C) 1988-2016 Free Software Foundation, Inc.
+# License GPLv3+: GNU GPL version 3 or later <http://gnu.org/licenses/gpl.html>
+# This is free software: you are free to change and redistribute it.
+# There is NO WARRANTY, to the extent permitted by law.
+
+# Make data base, printed on Fri Mar 31 01:17:41 2023
+
+# Variables
+
+# automatic
+<D = $(patsubst %/,%,$(dir $<))
+# automatic
+?F = $(notdir $?)
+# environment
+NODE_TLS_REJECT_UNAUTHORIZED = 0
+# default
+.SHELLFLAGS := -c
+# environment
+XDG_SESSION_CLASS = user
+# environment
+VSCODE_AGENT_FOLDER = /root/.vscode-server
+# environment
+XDG_SESSION_TYPE = tty
+# automatic
+?D = $(patsubst %/,%,$(dir $?))
+# automatic
+@D = $(patsubst %/,%,$(dir $@))
+# automatic
+@F = $(notdir $@)
+# default
+MAKE_VERSION := 4.2.1
+# makefile
+CURDIR := /usr/local/GOPATH/src/packer
+# makefile
+SHELL = /bin/sh
+# environment
+VSCODE_NLS_CONFIG = {"locale":"zh-cn","availableLanguages":{"*":"zh-cn"},"_languagePackId":"7996dc1a6dc0dd6d225359e814b5eae0.zh-cn","_translationsConfigFile":"/root/.vscode-server/data/clp/7996dc1a6dc0dd6d225359e814b5eae0.zh-cn/tcf.json","_cacheRoot":"/root/.vscode-server/data/clp/7996dc1a6dc0dd6d225359e814b5eae0.zh-cn","_corruptedFile":"/root/.vscode-server/data/clp/7996dc1a6dc0dd6d225359e814b5eae0.zh-cn/corrupted.info","_resolvedLanguagePackCoreLocation":"/root/.vscode-server/data/clp/7996dc1a6dc0dd6d225359e814b5eae0.zh-cn/ee2b180d582a7f601fa6ecfdad8d9fd269ab1884","_languagePackSupport":true}
+# environment
+_ = /root/.vscode-server/bin/ee2b180d582a7f601fa6ecfdad8d9fd269ab1884/node
+# makefile (from 'Makefile', line 1)
+MAKEFILE_LIST :=  Makefile
+# environment
+GO111MODULE = on
+# 'override' directive
+GNUMAKEFLAGS := 
+# environment
+VSCODE_AMD_ENTRYPOINT = vs/workbench/api/node/extensionHostProcess
+# environment
+DBUS_SESSION_BUS_ADDRESS = unix:path=/run/user/0/bus
+# environment
+VSCODE_CWD = /root
+# environment
+GOPROXY = https://proxy.golang.com.cn,direct
+# environment
+SSH_CONNECTION = 223.74.148.205 2880 192.168.0.41 22
+# environment
+PATH = /root/sdk/go1.19/bin:/root/.vscode-server/bin/ee2b180d582a7f601fa6ecfdad8d9fd269ab1884/bin/remote-cli:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin:/usr/local/GOPATH/bin:/usr/local/go/bin:/root/protoc/bin
+# environment
+LSCOLORS = Gxfxcxdxbxegedabagacad
+# environment
+XDG_RUNTIME_DIR = /run/user/0
+# environment
+GOPATH = /usr/local/GOPATH
+# environment
+ELECTRON_RUN_AS_NODE = 1
+# environment
+VSCODE_IPC_HOOK_CLI = /run/user/0/vscode-ipc-23a2de0c-2946-4684-b310-55fd270247e8.sock
+# default
+.FEATURES := target-specific order-only second-expansion else-if shortest-stem undefine oneshell archives jobserver output-sync check-symlink load
+# environment
+LS_COLORS = 
+# automatic
+%F = $(notdir $%)
+# environment
+PWD = /usr/local/GOPATH/src/packer
+# default
+.LOADED := 
+# automatic
+*D = $(patsubst %/,%,$(dir $*))
+# environment
+GOMODCACHE = /usr/local/GOPATH/pkg/mod
+# environment
+HOME = /root
+# environment
+LOGNAME = root
+# environment
+APPLICATION_INSIGHTS_NO_DIAGNOSTIC_CHANNEL = 1
+# automatic
++F = $(notdir $+)
+# environment
+ZSH = /root/.oh-my-zsh
+# environment
+VSCODE_HANDLES_UNCAUGHT_ERRORS = true
+# automatic
+^D = $(patsubst %/,%,$(dir $^))
+# environment
+MAKELEVEL := 0
+# default
+MAKE = $(MAKE_COMMAND)
+# default
+MAKECMDGOALS := all
+# environment
+SHLVL = 0
+# environment
+XDG_SESSION_ID = 7591
+# environment
+USER = root
+# makefile
+.DEFAULT_GOAL := build
+# environment
+LESS = -R
+# automatic
+%D = $(patsubst %/,%,$(dir $%))
+# default
+MAKE_COMMAND := make
+# environment
+OLDPWD = /root
+# default
+.VARIABLES := 
+# automatic
+*F = $(notdir $*)
+# environment
+LANGUAGE = en_US:
+# makefile
+MAKEFLAGS = pqrR
+# environment
+MFLAGS = -pqrR
+# environment
+SSH_CLIENT = 223.74.148.205 2880 22
+# automatic
++D = $(patsubst %/,%,$(dir $+))
+# environment
+BROWSER = /root/.vscode-server/bin/ee2b180d582a7f601fa6ecfdad8d9fd269ab1884/bin/helpers/browser.sh
+# environment
+VSCODE_HANDLES_SIGPIPE = true
+# default
+MAKEFILES := 
+# automatic
+<F = $(notdir $<)
+# environment
+PAGER = less
+# environment
+LC_ALL = C
+# automatic
+^F = $(notdir $^)
+# default
+SUFFIXES := 
+# default
+.INCLUDE_DIRS = /usr/include /usr/local/include /usr/include
+# default
+.RECIPEPREFIX := 
+# default
+MAKE_HOST := x86_64-pc-linux-gnu
+# environment
+LANG = C
+# environment
+MOTD_SHOWN = pam
+# variable set hash-table stats:
+# Load=74/1024=7%, Rehash=0, Collisions=10/99=10%
+
+# Pattern-specific Variable Values
+
+# No pattern-specific variable values.
+
+# Directories
+
+# . (device 64513, inode 1098650): 23 files, no impossibilities.
+
+# 23 files, no impossibilities in 1 directories.
+
+# Implicit Rules
+
+# No implicit rules.
+
+# Files
+
+# Not a target:
+all:
+#  Command line target.
+#  Implicit rule search has been done.
+#  File does not exist.
+#  File has not been updated.
+
+# Not a target:
+Makefile:
+#  Implicit rule search has been done.
+#  Last modified 2022-08-13 02:22:06.055982317
+#  File has been updated.
+#  Successfully updated.
+
+build:
+#  Implicit rule search has not been done.
+#  Modification time never checked.
+#  File has not been updated.
+#  recipe to execute (from 'Makefile', line 2):
+	go get google.golang.org/protobuf/cmd/protoc-gen-go
+	go get google.golang.org/grpc/cmd/protoc-gen-go-grpc
+
+# Not a target:
+.DEFAULT:
+#  Implicit rule search has not been done.
+#  Modification time never checked.
+#  File has not been updated.
+
+crawl:
+#  Implicit rule search has not been done.
+#  Modification time never checked.
+#  File has not been updated.
+#  recipe to execute (from 'Makefile', line 6):
+	-mkdir idl
+	wget https://raw.githubusercontent.com/goodguy-project/goodguy-crawl/main/crawl_service/crawl_service.proto -O idl/crawl_service.proto
+	protoc -I. --go_out=. --go_opt=Midl/crawl_service.proto=./idl --go-grpc_out=. --go-grpc_opt=Midl/crawl_service.proto=./idl ./idl/crawl_service.proto
+
+# files hash-table stats:
+# Load=6/1024=1%, Rehash=0, Collisions=0/16=0%
+# VPATH Search Paths
+
+# No 'vpath' search paths.
+
+# No general ('VPATH' variable) search path.
+
+# strcache buffers: 1 (0) / strings = 30 / storage = 221 B / avg = 7 B
+# current buf: size = 8162 B / used = 221 B / count = 30 / avg = 7 B
+
+# strcache performance: lookups = 36 / hit rate = 16%
+# hash-table stats:
+# Load=30/8192=0%, Rehash=0, Collisions=1/36=3%
+# Finished Make data base on Fri Mar 31 01:17:41 2023
+
+ 

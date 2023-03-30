@@ -12,6 +12,28 @@ import (
 	"github.com/wcharczuk/go-chart/v2"
 )
 
+func mkChartFile(pic *chart.Chart, name string) (filePath, fileName string) {
+	t := strconv.FormatInt(time.Now().Unix(), 10)
+	fileName = fmt.Sprintf("%s-%s%s.png", name, t, strconv.FormatUint(util.GetGoId(), 10))
+	filePath = fmt.Sprintf("%s/pic/%s", util.GetCurrentAbPath(), fileName)
+	fmt.Printf("DrawRecord, create filePath = (%+v), t = (%+v), goId = (%+v)\n", fileName, t, util.GetGoId())
+	f, _ := os.Create(filePath)
+	defer f.Close()
+	pic.Render(chart.PNG, f)
+	return
+}
+
+func mkBarChartFile(pic *chart.BarChart, name string) (filePath, fileName string) {
+	t := strconv.FormatInt(time.Now().Unix(), 10)
+	fileName = fmt.Sprintf("%s-%s%s.png", name, t, strconv.FormatUint(util.GetGoId(), 10))
+	filePath = fmt.Sprintf("%s/pic/%s", util.GetCurrentAbPath(), fileName)
+	fmt.Printf("DrawRecord, create filePath = (%+v), t = (%+v), goId = (%+v)\n", fileName, t, util.GetGoId())
+	f, _ := os.Create(filePath)
+	defer f.Close()
+	pic.Render(chart.PNG, f)
+	return
+}
+
 func DrawRecord(record []*idl.UserContestRecord_Record) (string, string) {
 	pic := chart.Chart{
 		XAxis: chart.XAxis{
@@ -73,13 +95,28 @@ func DrawRecord(record []*idl.UserContestRecord_Record) (string, string) {
 	pic.Series = append(pic.Series, chart.LastValueAnnotationSeries(minRate))
 	pic.Series = append(pic.Series, chart.LastValueAnnotationSeries(maxRate))
 
-	t := strconv.FormatInt(time.Now().Unix(), 10)
-	fileName := fmt.Sprintf("%s%s.png", t, strconv.FormatUint(util.GetGoId(), 10))
-	filePath := fmt.Sprintf("%s/pic/%s", util.GetCurrentAbPath(), fileName)
-	fmt.Printf("DrawRecord, create filePath = (%+v), t = (%+v), goId = (%+v)\n", fileName, t, util.GetGoId())
-	f, _ := os.Create(filePath)
-	defer f.Close()
-	pic.Render(chart.PNG, f)
+	return mkChartFile(&pic, "DrawRecord")
+}
 
-	return filePath, fileName
+func DrawBindUserDailyDiff(user map[string]int64) (string, string) {
+	pic := chart.BarChart{
+		Title: fmt.Sprintf("%s daily partice status", time.Now().Add(-24*time.Hour).Format("2006-01-02")),
+		Background: chart.Style{
+			Padding: chart.Box{
+				Top: 40,
+			},
+		},
+		BarWidth: 10,
+	}
+
+	var bars []chart.Value
+	for id, diff := range user {
+		bars = append(bars, chart.Value{
+			Value: float64(diff),
+			Label: id,
+		})
+	}
+	pic.Bars = bars
+
+	return mkBarChartFile(&pic, "DrawBindUserDailyDiff")
 }

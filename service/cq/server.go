@@ -53,18 +53,17 @@ func DefaultHandle(c *gin.Context) {
 	}
 	// fmt.Println("get http req = ", event)
 
-	msg := event.Message
-	groupId := event.GroupId
-
 	commCtx := map[string]string{
-		"group_id": strconv.FormatInt(groupId, 10),
+		"group_id": strconv.FormatInt(event.GroupId, 10),
+		"user_id":  strconv.FormatInt(event.UserId, 10),
 	}
-	s := strings.Split(msg, " ")
+	s := strings.Split(event.Message, " ")
 	param := []string{}
 	if len(s) > 1 {
 		param = s[1:]
 	}
 	if f, ok := model.MsgHandlerMap[util.MatchCommand(s[0])]; ok {
+		fmt.Println(event)
 		err := f.Handler(commCtx, param)
 		if err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{"status": err.Error()})

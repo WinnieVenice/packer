@@ -74,3 +74,33 @@ func MGetUserContestRecord(ctx context.Context, userContestRecordList []model.Us
 	}
 	return resp, nil
 }
+
+func GetUserSubmitRecord(ctx context.Context, platform, userName string) (*idl.UserSubmitRecord, error) {
+	resp, err := Client().GetUserSubmitRecord(ctx, &idl.GetUserSubmitRecordRequest{
+		Platform: platform,
+		Handle:   userName,
+	})
+	if err != nil {
+		fmt.Printf("get user submit record failed, plaform = (%+v), username = (%+v), err = (%+v)\n", platform, userName, err)
+		return nil, err
+	}
+	return resp, nil
+}
+
+func MGetUserSubmitRecord(ctx context.Context, userContestRecordList []model.UserContestRecord) (*idl.MGetUserSubmitRecordResponse, error) {
+	var reqList []*idl.GetUserSubmitRecordRequest
+	for _, v := range userContestRecordList {
+		reqList = append(reqList, &idl.GetUserSubmitRecordRequest{
+			Platform: v.Platform,
+			Handle:   v.Username,
+		})
+	}
+	resp, err := Client().MGetUserSubmitRecord(ctx, &idl.MGetUserSubmitRecordRequest{
+		GetUserSubmitRecordRequest: reqList,
+	})
+	if err != nil {
+		fmt.Printf("get user submit record multi failed, userContestList = (%+v), err = (%s)\n", userContestRecordList, err)
+		return nil, err
+	}
+	return resp, nil
+}

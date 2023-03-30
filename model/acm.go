@@ -55,7 +55,7 @@ func (c *Contest) String() string {
 	s := ""
 	s += fmt.Sprintf("比赛名字: %s\n", c.Name)
 	s += fmt.Sprintf("比赛地址: %s\n", c.Url)
-	s += fmt.Sprintf("开始时间: %+v\n", c.StartTime)
+	s += fmt.Sprintf("开始时间: %+v\n", c.StartTime.Format("2006-01-02 15:04:05"))
 	s += fmt.Sprintf("持续时间: %+v", c.Duration)
 	return s
 }
